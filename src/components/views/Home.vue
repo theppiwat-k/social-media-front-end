@@ -7,9 +7,13 @@ import "../../assets/global.css";
 
 export default {
   components: { LeftSide, Content, RigthSide, Header },
+  created() {
+  },
+  computed: {
+  },
   data() {
     return {
-      count: 0,
+      information: "",
     };
   },
 };
@@ -18,11 +22,15 @@ export default {
 <template>
   <Header />
   <div class="layout-row">
-    <div class="left-bar"><LeftSide /></div>
+    <div class="left-bar">
+      <LeftSide />
+    </div>
     <div class="content">
       <Content />
     </div>
-    <div class="rigth-bar"><RigthSide /></div>
+    <div class="rigth-bar">
+      <RigthSide />
+    </div>
   </div>
 </template>
 
@@ -31,12 +39,15 @@ export default {
   display: flex;
   background: #f8fafb;
   margin-top: 50px;
+
   .left-bar {
     flex: 1;
   }
+
   .content {
     flex: 2;
   }
+
   .rigth-bar {
     flex: 1;
   }

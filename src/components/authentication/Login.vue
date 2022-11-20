@@ -3,15 +3,10 @@ import AuthenticationService from "../../services/authentication.service";
 
 export default {
   created() {
-    const token = localStorage.getItem("token");
-    if (token) {
-      AuthenticationService.userProfile()
-        .then(() => {
-          this.$router.push("/home");
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+    console.log(this.$store.state.isAuthenticated)
+    this.$store.dispatch("authenticate");
+    if (this.$store.state.isAuthenticated === true) {
+      this.$router.push("/");
     }
   },
   data() {
@@ -40,11 +35,13 @@ export default {
         };
         AuthenticationService.login(body)
           .then((response) => {
+            console.log(response)
+            this.$store.commit('authenticate', true)
             localStorage.setItem("token", response.data.data.token);
-            this.$router.push("/home");
             this.errorMessage = "";
           })
           .catch((error) => {
+            this.$store.commit('authenticate', false)
             console.error(error);
             this.errorMessage = error.response.data.message;
           });
@@ -105,65 +102,33 @@ export default {
 
 <template>
   <div class="auth-warper">
+    {{ this.$store.state.isAuthenticated }}
     <div class="auth-box">
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button
-            class="nav-link active"
-            id="nav-login-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#nav-login"
-            type="button"
-            role="tab"
-            aria-controls="nav-login"
-            aria-selected="true"
-          >
+          <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login"
+            type="button" role="tab" aria-controls="nav-login" aria-selected="true">
             LOGIN
           </button>
-          <button
-            class="nav-link"
-            id="nav-register-tab"
-            data-bs-toggle="tab"
-            data-bs-target="#nav-register"
-            type="button"
-            role="tab"
-            aria-controls="nav-register"
-            aria-selected="false"
-          >
+          <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register"
+            type="button" role="tab" aria-controls="nav-register" aria-selected="false">
             REGISTER
           </button>
         </div>
       </nav>
       <div class="tab-content" id="nav-tabContent">
-        <div
-          class="tab-pane fade show active"
-          id="nav-login"
-          role="tabpanel"
-          aria-labelledby="nav-login-tab"
-        >
+        <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab">
           <div class="login-line">
             <form @submit.prevent="onLogin" novalidate>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="email">Email</span>
-                <input
-                  type="email"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="email"
-                  autocomplete="username"
-                  v-model="login.email"
-                />
+                <input type="email" class="form-control" aria-label="Sizing example input" aria-describedby="email"
+                  autocomplete="username" v-model="login.email" />
               </div>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="password">Password</span>
-                <input
-                  type="password"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="password"
-                  autocomplete="current-password"
-                  v-model="login.password"
-                />
+                <input type="password" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="password" autocomplete="current-password" v-model="login.password" />
               </div>
               <p class="text-danger" v-if="errorMessage">{{ errorMessage }}</p>
               <div class="login-btn">
@@ -175,48 +140,23 @@ export default {
             </form>
           </div>
         </div>
-        <div
-          class="tab-pane fade"
-          id="nav-register"
-          role="tabpanel"
-          aria-labelledby="nav-register-tab"
-        >
+        <div class="tab-pane fade" id="nav-register" role="tabpanel" aria-labelledby="nav-register-tab">
           <div class="register-line">
             <form @submit.prevent="onRegister">
               <div class="input-group mb-3">
                 <span class="input-group-text" id="new-email">Email</span>
-                <input
-                  type="email"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="new-email"
-                  autocomplete="username"
-                  v-model="register.email"
-                />
+                <input type="email" class="form-control" aria-label="Sizing example input" aria-describedby="new-email"
+                  autocomplete="username" v-model="register.email" />
               </div>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="new-password">Password</span>
-                <input
-                  type="password"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="new-password"
-                  autocomplete="new-password"
-                  v-model="register.password"
-                />
+                <input type="password" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="new-password" autocomplete="new-password" v-model="register.password" />
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text" id="confirm-password"
-                  >Confirm password</span
-                >
-                <input
-                  type="password"
-                  class="form-control"
-                  aria-label="Sizing example input"
-                  aria-describedby="confirm-password"
-                  autocomplete="new-password"
-                  v-model="register.confirmPassword"
-                />
+                <span class="input-group-text" id="confirm-password">Confirm password</span>
+                <input type="password" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="confirm-password" autocomplete="new-password" v-model="register.confirmPassword" />
               </div>
               <p class="text-danger" v-if="errorMessageRegister">
                 {{ errorMessageRegister }}
@@ -225,11 +165,7 @@ export default {
                 Your password and confirmation password do not match.
               </p>
               <div class="register-btn">
-                <button
-                  type="submit"
-                  class="btn btn-primary"
-                  :disabled="btnDisabled"
-                >
+                <button type="submit" class="btn btn-primary" :disabled="btnDisabled">
                   Register
                 </button>
               </div>
@@ -250,16 +186,19 @@ export default {
   height: 100vh;
   background: aliceblue;
 }
+
 .auth-warper .auth-box {
   width: 500px;
   min-height: 250px;
   background: white;
+
   .login-line {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-content: center;
     padding: 2rem;
+
     .login-btn {
       button {
         margin-left: 5px;
@@ -267,12 +206,14 @@ export default {
       }
     }
   }
+
   .register-line {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-content: center;
     padding: 2rem;
+
     .register-btn {
       button {
         margin-left: 5px;

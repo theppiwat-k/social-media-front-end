@@ -1,14 +1,15 @@
 import { createWebHistory, createRouter } from "vue-router";
+import store from "../store/state";
 
 const routes = [
   {
     path: "/login",
-    name: "login",
+    name: "Login",
     component: () => import("@/components/authentication/Login.vue"),
   },
   {
-    path: "/home",
-    name: "home",
+    path: "/",
+    name: "Home",
     component: () => import("@/components/views/Home.vue"),
   },
 ];
@@ -16,6 +17,14 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+router.beforeEach((to, from) => {
+  store.dispatch("authenticate");
+  console.log(store.state.isAuthenticated);
+  if (to.name !== "Login" && !store.state.isAuthenticated) {
+    return "/login";
+  }
 });
 
 export default router;
