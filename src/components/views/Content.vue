@@ -28,17 +28,17 @@ export default {
       email: "",
       message: "",
       stories: ["1", "2", "3", "4", "5", "6", "7"],
+      statuses: [],
     };
   },
   methods: {
     postStatus() {
       let body = {
-        author: this.email,
+        username: this.email,
         message: this.message,
       };
       StatusService.postStatus(body)
         .then((response) => {
-          console.log(response);
           this.getStatutus();
         })
         .catch((error) => {
@@ -46,14 +46,9 @@ export default {
         });
     },
     getStatutus() {
-      let body = {
-        author: this.email,
-      };
-      StatusService.getStatutus(body)
+      StatusService.getStatutus()
         .then((response) => {
-          console.log(response);
-          this.userStatus = [...response.data.data];
-          console.log(this.userStatus);
+          this.statuses = [...response.data.data].reverse();
         })
         .catch((error) => {
           console.error(error);
@@ -80,14 +75,12 @@ export default {
         <div class="text-area">
           <textarea class="text-area-status" v-model="message" placeholder="what's new"></textarea>
         </div>
-        <button class="btn btn-primary btn-lg" type="submit">
+        <button class="btn btn-primary btn-lg" @click="postStatus()" type="submit">
           <em class="bi bi-chat-square-dots-fill"></em>
         </button>
       </div>
-      <!-- <textarea v-model="message"></textarea>
-      <button @click="postStatus()">Post</button> -->
     </div>
-    <FeedBox />
+    <FeedBox v-for="status in statuses" :key="status.id" :username="status.username" :message="status.message" />
   </div>
 </template>
 

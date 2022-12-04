@@ -21,7 +21,6 @@ const router = createRouter({
 
 router.beforeEach((to, from) => {
   store.dispatch("authenticate");
-  console.log(store.state.isAuthenticated);
   if (to.name !== "Login" && !store.state.isAuthenticated) {
     return "/login";
   }

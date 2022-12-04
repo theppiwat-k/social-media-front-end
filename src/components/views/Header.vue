@@ -1,5 +1,23 @@
 <script>
-export default {};
+
+export default {
+  created() {
+    this.$store.dispatch('userInformation')
+  },
+  data() {
+    return {
+      login: {
+        email: "",
+        password: "",
+      }
+    }
+  },
+  methods: {
+    onLogout() {
+      console.log(this.$store.state.userInformation)
+    }
+  }
+};
 </script>
 
 <template>
@@ -19,6 +37,7 @@ export default {};
             </h6>
           </li>
         </ul>
+        <button type="button" class="btn btn-outline-secondary me-2" @click="onLogout()">Logout</button>
         <form class="d-flex">
           <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
           <button class="btn btn-outline-primary" type="submit">Search</button>

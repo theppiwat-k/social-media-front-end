@@ -4,7 +4,6 @@ const URL = "http://localhost:4000";
 
 class StatusService {
   postStatus(body) {
-    const url = `${URL}/status/postStatus`;
     const token = localStorage.getItem("token") || "";
     const config = {
       headers: {
@@ -12,11 +11,11 @@ class StatusService {
         Authorization: "Bearer " + token,
       },
     };
+    const url = `${URL}/posts/status`;
     return axios.post(url, body, config);
   }
 
-  getStatutus(body) {
-    const url = `${URL}/status/getStatus`;
+  getStatutus() {
     const token = localStorage.getItem("token") || "";
     const config = {
       headers: {
@@ -24,7 +23,8 @@ class StatusService {
         Authorization: "Bearer " + token,
       },
     };
-    return axios.post(url, body, config);
+    const url = `${URL}/posts/status`;
+    return axios.get(url, config);
   }
 }
 export default new StatusService();
