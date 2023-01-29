@@ -1,4 +1,5 @@
 <script>
+import AuthenticationService from "../../services/authentication.service";
 
 export default {
   created() {
@@ -14,7 +15,9 @@ export default {
   },
   methods: {
     onLogout() {
-      console.log(this.$store.state.userInformation)
+      AuthenticationService.logout(this.$store.state.userInformation).then(() => {
+        this.$router.go("/login");
+      }).catch()
     }
   }
 };

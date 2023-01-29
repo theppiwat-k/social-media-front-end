@@ -7,9 +7,16 @@ class AuthenticationService {
     return axios.post(url, body);
   }
 
-  logout() {
+  logout(body) {
+    const token = localStorage.getItem("token") || "";
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+    };
     const url = `${URL}/users/logout`;
-    return axios.post(url, body);
+    return axios.post(url, body,config);
   }
 
   register(body) {
@@ -26,21 +33,7 @@ class AuthenticationService {
       },
     };
     const url = `${URL}/users/user-profile`;
-    const parseJwt = (tokenValue) => {
-      let base64Url = tokenValue.split(".")[1];
-      console.log(base64Url)
-      let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      let jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    };
-    const data = parseJwt(token);
+    const data = this.parseJwt(token);
     let body = {
       username: data.data,
     };
@@ -57,6 +50,20 @@ class AuthenticationService {
     };
     const url = `${URL}/users/authorization`;
     return axios.get(url, config);
+  }
+
+  parseJwt(tokenValue) {
+    let base64Url = tokenValue.split(".")[1];
+    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+    let jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split("")
+        .map(function (c) {
+          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+        })
+        .join("")
+    );
+    return JSON.parse(jsonPayload);
   }
 }
 export default new AuthenticationService();

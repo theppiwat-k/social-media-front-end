@@ -18,7 +18,8 @@ const store = createStore({
     authenticate({ commit }) {
       AuthenticationService.authorization()
         .then((response) => {
-          commit("authenticate", true);
+          const activeStatus = response.data.data.active;
+          commit("authenticate", activeStatus);
         })
         .catch((error) => {
           console.error(error);
@@ -33,7 +34,6 @@ const store = createStore({
             email: response.data.data.email,
             username: response.data.data.username,
           };
-          console.log(userInformation)
           commit("userInformation", userInformation);
         })
         .catch((error) => {

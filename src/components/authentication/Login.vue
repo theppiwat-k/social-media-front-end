@@ -34,11 +34,10 @@ export default {
         };
         AuthenticationService.login(body)
           .then((response) => {
-            console.log(response)
             localStorage.setItem("token", response.data.data.token);
             this.$store.commit('authenticate', true)
             this.$store.dispatch('userInformation')
-            // this.$router.push("/");
+            this.$router.push("/");
           })
           .catch((error) => {
             this.$store.commit('authenticate', false)
@@ -56,7 +55,6 @@ export default {
       };
       AuthenticationService.register(body)
         .then((response) => {
-          console.log(response.data);
           this.errorMessageRegister = "";
         })
         .catch((error) => {
