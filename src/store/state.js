@@ -11,7 +11,7 @@ const store = createStore({
       state.isAuthenticated = authentication;
     },
     userInformation(state, userInformation) {
-      state.userInformation = userInformation;
+      state.userInformation =  Object.freeze(userInformation);
     },
   },
   actions: {
@@ -28,12 +28,12 @@ const store = createStore({
     userInformation({ commit }) {
       AuthenticationService.userProfile()
         .then((response) => {
-          console.log(response);
           let userInformation = {
             id: response.data.data.id,
             email: response.data.data.email,
             username: response.data.data.username,
           };
+          console.log(userInformation)
           commit("userInformation", userInformation);
         })
         .catch((error) => {
