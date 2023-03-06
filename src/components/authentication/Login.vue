@@ -28,8 +28,8 @@ export default {
   methods: {
     onLogin() {
       if (this.login.email && this.login.password) {
-        let body = {
-          username: this.login.email,
+        const body = {
+          email: this.login.email,
           password: this.login.password,
         };
         AuthenticationService.login(body)
