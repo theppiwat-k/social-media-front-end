@@ -1,28 +1,29 @@
 <script>
-import AuthenticationService from "../../services/authentication.service";
+import AuthenticationService from '../../services/authentication.service';
 
 export default {
   created() {
-    this.$store.dispatch("authenticate");
+    this.$store.dispatch('authenticate');
     if (this.$store.state.isAuthenticated === true) {
-      this.$router.push("/");
+      this.$router.push('/');
     }
   },
   data() {
     return {
       login: {
-        email: "",
-        password: "",
+        email: '',
+        password: '',
       },
       register: {
-        email: "",
-        password: "",
-        confirmPassword: "",
+        email: '',
+        password: '',
+        confirmPassword: '',
       },
       btnDisabled: true,
       isNotConfirm: false,
-      errorMessage: "",
-      errorMessageRegister: "",
+      errorMessage: '',
+      errorMessageRegister: '',
+      responseMessage: '',
     };
   },
   methods: {
@@ -34,37 +35,47 @@ export default {
         };
         AuthenticationService.login(body)
           .then((response) => {
-            localStorage.setItem("token", response.data.data.token);
-            this.$store.commit('authenticate', true)
-            this.$store.dispatch('userInformation')
-            this.$router.push("/");
+            localStorage.setItem('token', response.data.data.token);
+            this.$store.commit('authenticate', true);
+            this.$store.dispatch('userInformation');
+            this.$router.push('/');
           })
           .catch((error) => {
-            this.$store.commit('authenticate', false)
+            this.$store.commit('authenticate', false);
             console.error(error);
             this.errorMessage = error.response.data.message;
           });
       }
     },
     onRegister() {
-      let email = this.register.email.split(["@"]);
-      let body = {
-        username: email[0],
+      const username = this.register.email.split(['@'])[0];
+      const body = {
+        username: username,
         password: this.register.password,
         email: this.register.email,
       };
       AuthenticationService.register(body)
         .then((response) => {
-          this.errorMessageRegister = "";
+          const navLoginTap = this.$refs.navLoginTap
+          navLoginTap.click();
+          const message = response.data.message;
+          this.responseMessage = message;
+          this.errorMessageRegister = '';
+          Object.assign(this.register, {
+            email: '',
+            password: '',
+            confirmPassword: '',
+          });
         })
         .catch((error) => {
-          console.error(error.response.data.message);
+          console.error(error);
+          this.responseMessage = '';
           this.errorMessageRegister = error.response.data.message;
         });
     },
   },
   watch: {
-    "register.email": {
+    'register.email': {
       handler: function (after, before) {
         if (this.register.email) {
           if (this.isNotConfirm === false) {
@@ -103,12 +114,12 @@ export default {
     <div class="auth-box">
       <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" id="nav-login-tab" data-bs-toggle="tab" data-bs-target="#nav-login"
-            type="button" role="tab" aria-controls="nav-login" aria-selected="true">
+          <button class="nav-link active" ref="navLoginTap" id="nav-login-tab" data-bs-toggle="tab"
+            data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected="true">
             LOGIN
           </button>
-          <button class="nav-link" id="nav-register-tab" data-bs-toggle="tab" data-bs-target="#nav-register"
-            type="button" role="tab" aria-controls="nav-register" aria-selected="false">
+          <button class="nav-link" ref="navRegisterTap" id="nav-register-tab" data-bs-toggle="tab"
+            data-bs-target="#nav-register" type="button" role="tab" aria-controls="nav-register" aria-selected="false">
             REGISTER
           </button>
         </div>
@@ -124,9 +135,12 @@ export default {
               </div>
               <div class="input-group mb-3">
                 <span class="input-group-text" id="password">Password</span>
-                <input type="password" class="form-control" aria-label="Sizing example input"
-                  aria-describedby="password" autocomplete="current-password" v-model="login.password" />
+                <input type="password" class="form-control" aria-label="Sizing example input" aria-describedby="password"
+                  autocomplete="current-password" v-model="login.password" />
               </div>
+              <p class="text-success" v-if="responseMessage">
+                {{ responseMessage }}
+              </p>
               <p class="text-danger" v-if="errorMessage">{{ errorMessage }}</p>
               <div class="login-btn">
                 <button type="submit" class="btn btn-primary">Login</button>
@@ -155,10 +169,10 @@ export default {
                 <input type="password" class="form-control" aria-label="Sizing example input"
                   aria-describedby="confirm-password" autocomplete="new-password" v-model="register.confirmPassword" />
               </div>
-              <p class="text-danger" v-if="errorMessageRegister">
+              <p class="bs-light text-danger" v-if="errorMessageRegister">
                 {{ errorMessageRegister }}
               </p>
-              <p class="text-danger" v-if="isNotConfirm">
+              <p class="bs-light text-danger" v-if="isNotConfirm">
                 Your password and confirmation password do not match.
               </p>
               <div class="register-btn">
