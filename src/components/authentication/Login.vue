@@ -54,6 +54,7 @@ export default {
         password: this.register.password,
         email: this.register.email,
       };
+      this.btnDisabled = true
       AuthenticationService.register(body)
         .then((response) => {
           const navLoginTap = this.$refs.navLoginTap
@@ -66,8 +67,10 @@ export default {
             password: '',
             confirmPassword: '',
           });
+          this.btnDisabled = false
         })
         .catch((error) => {
+          this.btnDisabled = false
           console.error(error);
           this.responseMessage = '';
           this.errorMessageRegister = error.response.data.message;
