@@ -37,11 +37,11 @@ h6 {
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  padding: 2rem 2rem 4rem 2rem;
+  padding: 2rem 5rem;
   row-gap: 2rem;
   background: #f8fafb;
-  width: 344px;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
 }
 
 .lay-out:hover {

@@ -178,7 +178,7 @@ export default {
   padding: 2rem 2rem 4rem 2rem;
   row-gap: 2rem;
   background: #f8fafb;
-  height: 100vh;
+  height: 100%;
   width: 480px;
 }
 
