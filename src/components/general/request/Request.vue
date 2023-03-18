@@ -13,9 +13,10 @@ const getNewFriendRequest = (() => {
   RequestService.getNewFriendReuest().then((request) => {
     const requestData = request.data.data
     requestData.forEach(element => {
+      console.log(element)
       const requester = element.requester
       const requestBody = {
-        id: requester.id,
+        id: element._id,
         name: requester.username.charAt(0).toUpperCase() + requester.username.slice(1),
         information: new Date(element.createdAt).toLocaleDateString()
       }
@@ -25,9 +26,24 @@ const getNewFriendRequest = (() => {
   }).catch((error) => {
     console.error(error);
   });
-  console.log('getNewFriendRequest')
 })
 
+const acceptNewFriendRequest = ((id) => {
+  RequestService.acceptNewFriendRequest(id).then((respone) => {
+    console.log(respone)
+  }).catch((error) => {
+    console.error(error);
+  })
+})
+
+const rejectNewFriendRequest = ((id) => {
+  RequestService.rejectNewFriendRequest(id).then((respone) => {
+    console.log(respone)
+
+  }).catch((error) => {
+    console.error(error);
+  })
+})
 onMounted(() => {
   getNewFriendRequest();
 })
@@ -45,8 +61,8 @@ onMounted(() => {
       <span class="req-date">{{ req.information }}</span>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-primary">Accecpt</button>
-      <button type="button" class="btn btn-outline-secondary">Decline</button>
+      <button type="button" class="btn btn-primary" @click="acceptNewFriendRequest(req.id)">Accecpt</button>
+      <button type="button" class="btn btn-outline-secondary" @click="rejectNewFriendRequest(req.id)">Decline</button>
     </div>
   </div>
 </template>
