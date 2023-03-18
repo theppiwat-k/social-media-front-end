@@ -1,23 +1,21 @@
-<script>
+<script setup>
 import Request from "../general/request/Request.vue";
 import Contact from "../general/contact/Contact.vue";
+import { ref } from "vue";
 
-export default {
-  components: { Request, Contact },
-  data() {
-    return {
-      count: 0,
-    };
-  },
-};
+const request = ref(0)
+const updateCount = ((requests)=>{
+  request.value = requests
+})
+
 </script>
 
 <template>
   <div class="lay-out">
     <div class="requests">
       <h6>REQUESTS</h6>
-      <span class="badge bg-primary rounded-pill">2</span>
-      <Request />
+      <span class="badge bg-primary rounded-pill">{{request}}</span>
+      <Request  @request-count="updateCount"/>
     </div>
     <div class="contact">
       <h6>CONTACTS</h6>

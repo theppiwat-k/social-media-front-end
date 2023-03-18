@@ -1,4 +1,5 @@
 import axios from "axios";
+import getUserInfomation from '../utils/getUserInfomation';
 
 const URL = import.meta.env.VITE_API_URL
 class AuthenticationService {
@@ -33,9 +34,9 @@ class AuthenticationService {
       },
     };
     const url = `${URL}/users/user-profile`;
-    const data = this.parseJwt(token);
+    const user = getUserInfomation(token);
     let body = {
-      username: data.data,
+      username: user.email,
     };
     return axios.post(url, body, config);
   }
@@ -50,20 +51,6 @@ class AuthenticationService {
     };
     const url = `${URL}/users/authorization`;
     return axios.get(url, config);
-  }
-
-  parseJwt(tokenValue) {
-    let base64Url = tokenValue.split(".")[1];
-    let base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-    let jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split("")
-        .map(function (c) {
-          return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join("")
-    );
-    return JSON.parse(jsonPayload);
   }
 }
 export default new AuthenticationService();
