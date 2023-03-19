@@ -1,26 +1,22 @@
-<script>
+<script setup>
+
+import { useStore } from 'vuex';
+import { useRouter } from 'vue-router'
+import { onMounted, reactive } from "vue";
 import AuthenticationService from "../../services/authentication.service";
 
-export default {
-  created() {
-    this.$store.dispatch('userInformation')
-  },
-  data() {
-    return {
-      login: {
-        email: "",
-        password: "",
-      }
-    }
-  },
-  methods: {
-    onLogout() {
-      AuthenticationService.logout(this.$store.state.userInformation).then(() => {
-        this.$router.go("/login");
-      }).catch()
-    }
-  }
-};
+const store = useStore();
+const router = useRouter();
+
+const onLogout = () => {
+  AuthenticationService.logout(store.state.userInformation).then(() => {
+    router.go("/login");
+  }).catch()
+}
+
+onMounted(async () => {
+  await store.dispatch('userInformation')
+})
 </script>
 
 <template>
@@ -40,11 +36,8 @@ export default {
             </h6>
           </li>
         </ul>
+        <h4 style="margin-right: 1rem;"> {{ store.state.userInformation.username }}</h4>
         <button type="button" class="btn btn-outline-secondary me-2" @click="onLogout()">Logout</button>
-        <form class="d-flex">
-          <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />
-          <button class="btn btn-outline-primary" type="submit">Search</button>
-        </form>
         <img src="../../assets/profile.jpg" class="img-fluid rounded-circle" alt="logo-image"
           style="margin-left: 10px;width: 30px;height: 30px;" />
       </div>
