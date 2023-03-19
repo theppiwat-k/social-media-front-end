@@ -18,6 +18,7 @@ const sendFriendRequest = async (recipient)=>{
     }).catch((error)=>{
         console.error(error)
     })
+    getSuggestFriend();
 }
 
 onMounted(() => {

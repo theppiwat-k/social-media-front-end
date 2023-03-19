@@ -33,7 +33,7 @@ class FriendService {
         Authorization: 'Bearer ' + token,
       },
     };
-    const url = `${URL}/friends/newfriendrequest/`;
+    const url = `${URL}/friends/newfriendrequest`;
     return axios.post(url,body, config);
   }
 
@@ -52,7 +52,7 @@ class FriendService {
       },
       body:body
     };
-    const url = `${URL}/friends/accecptnewfriend/`;
+    const url = `${URL}/friends/accecptnewfriend`;
     return axios.put(url, body,config);
   }
 
@@ -70,7 +70,7 @@ class FriendService {
         Authorization: 'Bearer ' + token,
       },
     };
-    const url = `${URL}/friends/rejectnewfriend/`;
+    const url = `${URL}/friends/rejectnewfriend`;
     return axios.put(url,body, config);
   }
 
@@ -86,7 +86,23 @@ class FriendService {
         id: user.id,
       },
     };
-    const url = `${URL}/friends/suggest-friend/`;
+    const url = `${URL}/friends/suggest-friend`;
+    return axios.get(url, config);
+  }
+
+  getFriend() {
+    const token = localStorage.getItem('token') || '';
+    const user = getUserInfomation(token);
+    const config = {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + token,
+      },
+      params: {
+        id: user.id,
+      },
+    };
+    const url = `${URL}/friends/getfriend`;
     return axios.get(url, config);
   }
 }

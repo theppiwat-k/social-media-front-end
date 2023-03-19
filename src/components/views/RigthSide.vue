@@ -5,8 +5,13 @@ import Suggest from "../general/suggestFriend/SuggestFriend.vue"
 import { ref } from "vue";
 
 const request = ref(0)
-const updateCount = ((requests) => {
+const contact = ref(0)
+const updateRequestCount = ((requests) => {
   request.value = requests
+})
+
+const updateContactCount = ((contacts)=>{
+  contact.value = contacts
 })
 
 </script>
@@ -17,12 +22,13 @@ const updateCount = ((requests) => {
       <h6>REQUESTS</h6>
       <span v-if="request > 0 " class="badge bg-primary rounded-pill">{{ request }}</span>
       <h5 v-else class="no-request">No Request</h5>
-      <Request @request-count="updateCount" />
+      <Request @request-count="updateRequestCount" />
     </div>
     <div class="contact">
       <h6>CONTACTS</h6>
-      <span class="badge bg-primary rounded-pill">2</span>
-      <Contact />
+      <span v-if="contact > 0 " class="badge bg-primary rounded-pill">{{ contact }}</span>
+      <h5 v-else class="no-contact">No Contact</h5>
+      <Contact @contact-count="updateContactCount" />
     </div>
     <div class="suggest">
       <h6>SUGGEST</h6>
@@ -93,6 +99,11 @@ h6 {
 }
 
 .no-request {
+  display: flex;
+  justify-content: center;
+}
+
+.no-contact {
   display: flex;
   justify-content: center;
 }
