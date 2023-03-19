@@ -1,6 +1,6 @@
 <script setup>
 import { reactive, onMounted } from 'vue'
-import RequestService from '../../../services/request.service';
+import FriendService from '../../../services/friend.service';
 
 const state = reactive({
   requests: [
@@ -9,14 +9,14 @@ const state = reactive({
 
 const emit = defineEmits(['requestCount'])
 
-const getNewFriendRequest = (() => {
-  RequestService.getNewFriendReuest().then((request) => {
-    const requestData = request.data.data
+const getNewFriendRequest = async () => {
+  await FriendService.getNewFriendReuest().then((response) => {
+    const requestData = response.data.data
     requestData.forEach(element => {
-      console.log(element)
       const requester = element.requester
       const requestBody = {
         id: element._id,
+        requesterId:requester.id,
         name: requester.username.charAt(0).toUpperCase() + requester.username.slice(1),
         information: new Date(element.createdAt).toLocaleDateString()
       }
@@ -26,24 +26,22 @@ const getNewFriendRequest = (() => {
   }).catch((error) => {
     console.error(error);
   });
-})
+}
 
-const acceptNewFriendRequest = ((id) => {
-  RequestService.acceptNewFriendRequest(id).then((respone) => {
-    console.log(respone)
+const acceptNewFriendRequest =  async (id,requesterId) => {
+  await FriendService.acceptNewFriendRequest(id,requesterId).then((respone) => {
   }).catch((error) => {
     console.error(error);
   })
-})
+}
 
-const rejectNewFriendRequest = ((id) => {
-  RequestService.rejectNewFriendRequest(id).then((respone) => {
-    console.log(respone)
+const rejectNewFriendRequest = async (id) => {
+  await FriendService.rejectNewFriendRequest(id).then((respone) => {
 
   }).catch((error) => {
     console.error(error);
   })
-})
+}
 onMounted(() => {
   getNewFriendRequest();
 })
@@ -61,7 +59,7 @@ onMounted(() => {
       <span class="req-date">{{ req.information }}</span>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-primary" @click="acceptNewFriendRequest(req.id)">Accecpt</button>
+      <button type="button" class="btn btn-primary" @click="acceptNewFriendRequest(req.id,req.requesterId)">Accecpt</button>
       <button type="button" class="btn btn-outline-secondary" @click="rejectNewFriendRequest(req.id)">Decline</button>
     </div>
   </div>
