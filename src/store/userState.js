@@ -13,6 +13,9 @@ const store = createStore({
     userInformation(state, userInformation) {
       state.userInformation =  Object.freeze(userInformation);
     },
+    logout(state){
+      state.isAuthenticated = false
+    }
   },
   actions: {
     authenticate({ commit }) {
@@ -40,6 +43,9 @@ const store = createStore({
           console.error(error);
         });
     },
+    logout({commit}){
+      commit("logout", false)
+    }
   },
   modules: {},
 });

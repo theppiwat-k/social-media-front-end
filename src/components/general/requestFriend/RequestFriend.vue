@@ -16,7 +16,7 @@ const getNewFriendRequest = async () => {
       const requester = element.requester
       const requestBody = {
         id: element._id,
-        requesterId:requester.id,
+        requesterId: requester.id,
         name: requester.username.charAt(0).toUpperCase() + requester.username.slice(1),
         information: new Date(element.createdAt).toLocaleDateString()
       }
@@ -28,8 +28,8 @@ const getNewFriendRequest = async () => {
   });
 }
 
-const acceptNewFriendRequest =  async (id,requesterId) => {
-  await FriendService.acceptNewFriendRequest(id,requesterId).then((respone) => {
+const acceptNewFriendRequest = async (id, requesterId) => {
+  await FriendService.acceptNewFriendRequest(id, requesterId).then((respone) => {
   }).catch((error) => {
     console.error(error);
   })
@@ -49,7 +49,7 @@ onMounted(() => {
 
 </script>
 <template>
-  <div class="request-box mb-4" v-for="req in state.requests" :key="req.id">
+  <div v-for="req in state.requests" :key="req.id" class="request-box mb-4">
     <div class="information mb-2">
       <img class="rounded-circle" src="../../../assets/profile.jpg" alt="" />
       <h5 class="req-name">{{ req.name }}</h5>
@@ -59,7 +59,8 @@ onMounted(() => {
       <span class="req-date">{{ req.information }}</span>
     </div>
     <div class="actions">
-      <button type="button" class="btn btn-primary" @click="acceptNewFriendRequest(req.id,req.requesterId)">Accecpt</button>
+      <button type="button" class="btn btn-primary"
+        @click="acceptNewFriendRequest(req.id, req.requesterId)">Accecpt</button>
       <button type="button" class="btn btn-outline-secondary" @click="rejectNewFriendRequest(req.id)">Decline</button>
     </div>
   </div>

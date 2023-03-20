@@ -1,6 +1,32 @@
 <script setup>
+import { reactive } from 'vue';
 import { useStore } from 'vuex';
+import UserService from '../../../services/user.service'
+
 const store = useStore();
+const userId = store.state.userInformation.id
+const userName = store.state.userInformation.username
+
+const state = reactive({
+   userBody: {
+      id: userId,
+      username: userName
+   },
+   action: 'view'
+})
+
+const updateUserProfile = async () => {
+   const body = JSON.parse(
+      JSON.stringify(state.userBody)
+   );
+   await UserService.updateUserProfile(body).then((response) => {
+      store.dispatch('userInformation')
+      state.action = 'view'
+   }).catch((error) => {
+      alert('Fails')
+      console.error(error)
+   })
+}
 </script>
 
 <template>
@@ -22,20 +48,25 @@ const store = useStore();
          <div class="profile-username">
             <div class="form-group">
                <label for="userNameInput">User Name</label>
-               <input id="userNameInput" :value="store.state.userInformation.username" type="text" class="form-control"
+               <input v-if="state.action === 'view'" id="userNameInputReadonly" readonly
+                  :value="store.state.userInformation.username" type="text" class="form-control" placeholder="usename">
+               <input v-else id="userNameInput" v-model="state.userBody.username" type="text" class="form-control"
                   placeholder="usename">
             </div>
          </div>
          <div class="profile-email">
             <div class="form-group">
                <label for="emailInput">Email address</label>
-               <input id="emailInput" :value="store.state.userInformation.email" type="email" class="form-control"
+               <input id="emailInput" readonly :value="store.state.userInformation.email" type="email" class="form-control"
                   placeholder="name@example.com">
             </div>
          </div>
-         <button type="button" class="btn btn-primary me-2">Edit</button>
-         <button type="button" class="btn btn-warning me-2">Save</button>
-         <button type="button" class="btn btn-secondary" @click="$router.push('main')">Cancel</button>
+         <button v-if="state.action === 'view'" type="button" class="btn btn-primary me-2"
+            @click="state.action = 'edit'">Edit</button>
+         <button v-else type="button" class="btn btn-warning me-2" @click="updateUserProfile()">Save</button>
+         <button v-if="state.action === 'view'" type="button" class="btn btn-secondary" @click="$router.push('main')">Back</button>
+         <button v-else type="button" class="btn btn-secondary"
+            @click="state.action = 'view'">Cancel</button>
       </form>
    </div>
 </template>

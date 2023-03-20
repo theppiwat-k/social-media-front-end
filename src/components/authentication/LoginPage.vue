@@ -52,7 +52,7 @@ export default {
       deep: true,
     },
   },
-  created() {
+  mounted() {
     this.$store.dispatch('authenticate');
     if (this.$store.state.isAuthenticated === true) {
       this.$router.push('/');

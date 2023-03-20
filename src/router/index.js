@@ -3,13 +3,13 @@ import store from '../store/userState';
 
 const routes = [
   {
+    path: '/',
+    redirect: '/main',
+  },
+  {
     path: '/login',
     name: 'Login',
     component: () => import('@/components/authentication/LoginPage.vue'),
-  },
-  {
-    path: '/',
-    redirect: '/main',
   },
   {
     path: '/',
@@ -36,8 +36,9 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach(async (to, from) => {
-  const isAuthenticated = store.dispatch('authenticate');
+router.beforeEach(async (to) => {
+  await store.dispatch('authenticate');
+  const isAuthenticated = store.state.isAuthenticated
   if (to.name !== 'Login' && !isAuthenticated) {
     return '/login';
   }
