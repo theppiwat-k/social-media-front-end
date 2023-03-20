@@ -2,12 +2,6 @@
 import AuthenticationService from '../../services/authentication.service';
 
 export default {
-  created() {
-    this.$store.dispatch('authenticate');
-    if (this.$store.state.isAuthenticated === true) {
-      this.$router.push('/');
-    }
-  },
   data() {
     return {
       login: {
@@ -25,6 +19,44 @@ export default {
       errorMessageRegister: '',
       responseMessage: '',
     };
+  },
+  watch: {
+    'register.email': {
+      handler: function (after, before) {
+        if (this.register.email) {
+          if (this.isNotConfirm === false) {
+            this.btnDisabled = true;
+          } else {
+            this.btnDisabled = false;
+          }
+        } else {
+          this.btnDisabled = true;
+        }
+      },
+      deep: true,
+    },
+    register: {
+      handler: function (after, before) {
+        if (this.register.password && this.register.confirmPassword) {
+          if (this.register.password === this.register.confirmPassword) {
+            this.isNotConfirm = false;
+            if (this.register.email) this.btnDisabled = false;
+          } else {
+            this.isNotConfirm = true;
+            this.btnDisabled = true;
+          }
+        } else {
+          this.btnDisabled = true;
+        }
+      },
+      deep: true,
+    },
+  },
+  created() {
+    this.$store.dispatch('authenticate');
+    if (this.$store.state.isAuthenticated === true) {
+      this.$router.push('/');
+    }
   },
   methods: {
     onLogin() {
@@ -77,38 +109,6 @@ export default {
         });
     },
   },
-  watch: {
-    'register.email': {
-      handler: function (after, before) {
-        if (this.register.email) {
-          if (this.isNotConfirm === false) {
-            this.btnDisabled = true;
-          } else {
-            this.btnDisabled = false;
-          }
-        } else {
-          this.btnDisabled = true;
-        }
-      },
-      deep: true,
-    },
-    register: {
-      handler: function (after, before) {
-        if (this.register.password && this.register.confirmPassword) {
-          if (this.register.password === this.register.confirmPassword) {
-            this.isNotConfirm = false;
-            if (this.register.email) this.btnDisabled = false;
-          } else {
-            this.isNotConfirm = true;
-            this.btnDisabled = true;
-          }
-        } else {
-          this.btnDisabled = true;
-        }
-      },
-      deep: true,
-    },
-  },
 };
 </script>
 
@@ -116,35 +116,35 @@ export default {
   <div class="auth-warper">
     <div class="auth-box">
       <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-          <button class="nav-link active" ref="navLoginTap" id="nav-login-tab" data-bs-toggle="tab"
+        <div id="nav-tab" class="nav nav-tabs" role="tablist">
+          <button id="nav-login-tab" ref="navLoginTap" class="nav-link active" data-bs-toggle="tab"
             data-bs-target="#nav-login" type="button" role="tab" aria-controls="nav-login" aria-selected="true">
             LOGIN
           </button>
-          <button class="nav-link" ref="navRegisterTap" id="nav-register-tab" data-bs-toggle="tab"
+          <button id="nav-register-tab" ref="navRegisterTap" class="nav-link" data-bs-toggle="tab"
             data-bs-target="#nav-register" type="button" role="tab" aria-controls="nav-register" aria-selected="false">
             REGISTER
           </button>
         </div>
       </nav>
-      <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show active" id="nav-login" role="tabpanel" aria-labelledby="nav-login-tab">
+      <div id="nav-tabContent" class="tab-content">
+        <div id="nav-login" class="tab-pane fade show active" role="tabpanel" aria-labelledby="nav-login-tab">
           <div class="login-line">
-            <form @submit.prevent="onLogin" novalidate>
+            <form novalidate @submit.prevent="onLogin">
               <div class="input-group mb-3">
-                <span class="input-group-text" id="email">Email</span>
-                <input type="email" class="form-control" aria-label="Sizing example input" aria-describedby="email"
-                  autocomplete="username" v-model="login.email" />
+                <span id="email" class="input-group-text">Email</span>
+                <input v-model="login.email" type="email" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="email" autocomplete="username" />
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text" id="password">Password</span>
-                <input type="password" class="form-control" aria-label="Sizing example input" aria-describedby="password"
-                  autocomplete="current-password" v-model="login.password" />
+                <span id="password" class="input-group-text">Password</span>
+                <input v-model="login.password" type="password" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="password" autocomplete="current-password" />
               </div>
-              <p class="text-success" v-if="responseMessage">
+              <p v-if="responseMessage" class="text-success">
                 {{ responseMessage }}
               </p>
-              <p class="text-danger" v-if="errorMessage">{{ errorMessage }}</p>
+              <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
               <div class="login-btn">
                 <button type="submit" class="btn btn-primary">Login</button>
                 <button type="button" class="btn btn-warning">
@@ -154,28 +154,28 @@ export default {
             </form>
           </div>
         </div>
-        <div class="tab-pane fade" id="nav-register" role="tabpanel" aria-labelledby="nav-register-tab">
+        <div id="nav-register" class="tab-pane fade" role="tabpanel" aria-labelledby="nav-register-tab">
           <div class="register-line">
             <form @submit.prevent="onRegister">
               <div class="input-group mb-3">
-                <span class="input-group-text" id="new-email">Email</span>
-                <input type="email" class="form-control" aria-label="Sizing example input" aria-describedby="new-email"
-                  autocomplete="username" v-model="register.email" />
+                <span id="new-email" class="input-group-text">Email</span>
+                <input v-model="register.email" type="email" class="form-control" aria-label="Sizing example input"
+                  aria-describedby="new-email" autocomplete="username" />
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text" id="new-password">Password</span>
-                <input type="password" class="form-control" aria-label="Sizing example input"
-                  aria-describedby="new-password" autocomplete="new-password" v-model="register.password" />
+                <span id="new-password" class="input-group-text">Password</span>
+                <input v-model="register.password" type="password" class="form-control"
+                  aria-label="Sizing example input" aria-describedby="new-password" autocomplete="new-password" />
               </div>
               <div class="input-group mb-3">
-                <span class="input-group-text" id="confirm-password">Confirm password</span>
-                <input type="password" class="form-control" aria-label="Sizing example input"
-                  aria-describedby="confirm-password" autocomplete="new-password" v-model="register.confirmPassword" />
+                <span id="confirm-password" class="input-group-text">Confirm password</span>
+                <input v-model="register.confirmPassword" type="password" class="form-control"
+                  aria-label="Sizing example input" aria-describedby="confirm-password" autocomplete="new-password" />
               </div>
-              <p class="bs-light text-danger" v-if="errorMessageRegister">
+              <p v-if="errorMessageRegister" class="bs-light text-danger">
                 {{ errorMessageRegister }}
               </p>
-              <p class="bs-light text-danger" v-if="isNotConfirm">
+              <p v-if="isNotConfirm" class="bs-light text-danger">
                 Your password and confirmation password do not match.
               </p>
               <div class="register-btn">

@@ -4,6 +4,14 @@ import FeedBox from "../general/feedbox/FeedBox.vue";
 
 export default {
   components: { FeedBox },
+  data() {
+    return {
+      email: "",
+      message: "",
+      stories: ["1", "2", "3", "4", "5", "6", "7"],
+      statuses: [],
+    };
+  },
   created() {
     const token = localStorage.getItem("token");
     const parseJwt = (tokenValue) => {
@@ -22,14 +30,6 @@ export default {
     const data = parseJwt(token);
     this.email = data.data;
     this.getStatutus();
-  },
-  data() {
-    return {
-      email: "",
-      message: "",
-      stories: ["1", "2", "3", "4", "5", "6", "7"],
-      statuses: [],
-    };
   },
   methods: {
     postStatus() {
@@ -61,7 +61,7 @@ export default {
 <template>
   <div class="lay-out">
     <div class="stoty-control">
-      <div class="story-box rounded-custom" v-for="item in stories" :key="item">
+      <div v-for="item in stories" :key="item" class="story-box rounded-custom">
         <img class="img-profile rounded-circle" src="../../assets/profile.jpg" alt="" />
         <img class="bg rounded-custom" src="../../assets/profile.jpg" alt="" />
       </div>
@@ -73,14 +73,15 @@ export default {
       <div class="status-box rounded-custom">
         <img class="rounded-circle" src="../../assets/profile.jpg" alt="profile" />
         <div class="text-area">
-          <textarea class="text-area-status" v-model="message" placeholder="what's new"></textarea>
+          <textarea v-model="message" class="text-area-status" placeholder="what's new"></textarea>
         </div>
-        <button class="btn btn-primary btn-lg" @click="postStatus()" type="submit">
+        <button class="btn btn-primary btn-lg" type="submit" @click="postStatus()">
           <em class="bi bi-chat-square-dots-fill"></em>
         </button>
       </div>
     </div>
     <FeedBox v-for="status in statuses" :key="status.id" :username="status.username" :message="status.message" />
+    <!-- <Profile /> -->
   </div>
 </template>
 

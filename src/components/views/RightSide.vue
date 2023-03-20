@@ -1,11 +1,12 @@
 <script setup>
-import Request from "../general/request/Request.vue";
+import Request from "../general/requestFriend/RequestFriend.vue";
 import Contact from "../general/contact/Contact.vue";
 import Suggest from "../general/suggestFriend/SuggestFriend.vue"
 import { ref } from "vue";
 
 const request = ref(0)
 const contact = ref(0)
+const suggest = ref(0)
 const updateRequestCount = ((requests) => {
   request.value = requests
 })
@@ -13,6 +14,11 @@ const updateRequestCount = ((requests) => {
 const updateContactCount = ((contacts)=>{
   contact.value = contacts
 })
+
+const updateSuggestCount = ((suggests)=>{
+  suggest.value = suggests
+})
+
 
 </script>
 
@@ -32,7 +38,8 @@ const updateContactCount = ((contacts)=>{
     </div>
     <div class="suggest">
       <h6>SUGGEST</h6>
-      <Suggest />
+      <Suggest v-if="suggest > 0" @suggest-count="updateSuggestCount"/>
+      <h5 v-else class="no-request" >No Suggest</h5>
     </div>
   </div>
 </template>

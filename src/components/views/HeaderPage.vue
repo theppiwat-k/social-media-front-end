@@ -2,15 +2,15 @@
 
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router'
-import { onMounted, reactive } from "vue";
+import { onMounted } from "vue";
 import AuthenticationService from "../../services/authentication.service";
 
 const store = useStore();
 const router = useRouter();
 
-const onLogout = () => {
-  AuthenticationService.logout(store.state.userInformation).then(() => {
-    router.go("/login");
+const onLogout = async () => {
+  await AuthenticationService.logout(store.state.userInformation).then(() => {
+    router.push("/login");
   }).catch()
 }
 
@@ -22,13 +22,13 @@ onMounted(async () => {
 <template>
   <nav class="navbar navbar-expand-lg navbar-light border-bottom fixed-top">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#"><img src="../../assets/logo.svg" class="img-fluid" alt="logo-image"
-          width="30" /></a>
+      <a class="navbar-brand" @click="$router.push('main')"><img src="../../assets/logo.svg" class="img-fluid"
+          alt="logo-image" width="30" /></a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
         aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <div id="navbarSupportedContent" class="collapse navbar-collapse">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <h6 class="nav-link active" style="margin: 0 !important">
@@ -48,5 +48,9 @@ onMounted(async () => {
 <style lang="scss" scoped>
 nav {
   background: white;
+}
+
+.navbar-brand {
+  cursor: pointer;
 }
 </style>
