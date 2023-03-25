@@ -32,14 +32,13 @@ const updateSuggestCount = ((suggests) => {
     </div>
     <div class="contact">
       <h6>CONTACTS</h6>
-      <span v-if="contact > 0" class="badge bg-primary rounded-pill">{{ contact }}</span>
-      <h5 v-else class="no-contact">No Contact</h5>
+      <h5 v-if="contact === 0" class="no-contact">No Contact</h5>
       <ContactFriend @contact-count="updateContactCount" />
     </div>
     <div class="suggest">
       <h6>SUGGEST</h6>
-      <Suggest v-if="suggest > 0" @suggest-count="updateSuggestCount" />
-      <h5 v-else class="no-request">No Suggest</h5>
+      <Suggest @suggest-count="updateSuggestCount" />
+      <h5 v-if="suggest === 0" class="no-request">No Suggest</h5>
     </div>
   </div>
 </template>

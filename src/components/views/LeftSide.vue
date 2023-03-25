@@ -70,7 +70,7 @@ const avatar = computed(() => {
 }
 
 .lay-out::-webkit-scrollbar {
-  width: .5em;
+  width: .0em;
 }
 
 .lay-out::-webkit-scrollbar-track {

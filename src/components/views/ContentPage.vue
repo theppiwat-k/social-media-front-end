@@ -1,72 +1,71 @@
-<script>
-import router from "../../router";
+<script setup>
+import { reactive, watch, onMounted } from "vue"
+import { useStore } from "vuex";
 import StatusService from "../../services/status.service";
+import getAvartar from "../../utils/getAvatar";
 import FeedBox from "../general/feedbox/FeedBox.vue";
 
-export default {
-  components: { FeedBox },
-  data() {
-    return {
-      email: "",
-      message: "",
-      stories: ["1", "2", "3", "4", "5", "6", "7"],
-      statuses: [],
-    };
-  },
-  created() {
-    const token = localStorage.getItem("token");
-    if(token){
-      const parseJwt = (tokenValue) => {
-        var base64Url = tokenValue.split(".")[1];
-        var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-        var jsonPayload = decodeURIComponent(
-          atob(base64)
-            .split("")
-            .map(function (c) {
-              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-            })
-            .join("")
-        );
-        return JSON.parse(jsonPayload);
-      };
-      const data = parseJwt(token);
-      this.email = data.data;
-      this.getStatutus();
-    }else{
-      router.push('/login')
-    }
-  },
-  methods: {
-    postStatus() {
-      let body = {
-        username: this.email,
-        message: this.message,
-      };
-      StatusService.postStatus(body)
-        .then((response) => {
-          this.getStatutus();
+const store = useStore();
+const state = reactive({
+  id: store.state.userInformation.id,
+  message: "",
+  stories: ["1", "2", "3", "4", "5", "6", "7"],
+  statuses: [],
+  avatar: getAvartar(store.state.userInformation)
+})
+
+const getStatutus = async () => {
+  const body = {
+    id: store.state.userInformation.id
+  }
+  await StatusService.getStatutus(body)
+    .then((response) => {
+      if (response.data.data.length > 0) {
+        const statusMap = response.data.data.map(status => {
+          return { ...status, avatar: getAvartar(status.author) }
         })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-    getStatutus() {
-      StatusService.getStatutus()
-        .then((response) => {
-          this.statuses = [...response.data.data].reverse();
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-    },
-  },
-};
+        state.statuses = statusMap
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+const postStatus = async () => {
+  const body = {
+    author: state.id,
+    message: state.message,
+  };
+  await StatusService.postStatus(body)
+    .then((response) => {
+      getStatutus();
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+}
+
+watch(() => store.state.userInformation, (userInformation) => {
+  state.id = userInformation.id;
+  state.avatar = getAvartar(store.state.userInformation)
+  if (state.id) {
+    getStatutus();
+  }
+}, { deep: true });
+
+onMounted(() => {
+  if (state.id) {
+    getStatutus();
+  }
+})
+
 </script>
 
 <template>
   <div class="lay-out">
     <div class="stoty-control">
-      <div v-for="item in stories" :key="item" class="story-box rounded-custom">
+      <div v-for="item in state.stories" :key="item" class="story-box rounded-custom">
         <img class="img-profile rounded-circle" src="../../assets/profile.jpg" alt="" />
         <img class="bg rounded-custom" src="../../assets/profile.jpg" alt="" />
       </div>
@@ -76,17 +75,19 @@ export default {
     </div>
     <div class="status-control d-flex">
       <div class="status-box rounded-custom">
-        <img class="rounded-circle" src="../../assets/profile.jpg" alt="profile" />
+        <img class="rounded-circle" :src="state.avatar" alt="profile image" />
         <div class="text-area">
-          <textarea v-model="message" class="text-area-status" placeholder="what's new"></textarea>
+          <textarea v-model="state.message" class="text-area-status" placeholder="what's new"></textarea>
         </div>
         <button class="btn btn-primary btn-lg" type="submit" @click="postStatus()">
           <em class="bi bi-chat-square-dots-fill"></em>
         </button>
       </div>
     </div>
-    <FeedBox v-for="status in statuses" :key="status.id" :username="status.username" :message="status.message" />
-    <!-- <Profile /> -->
+    <template v-if="state.statuses.length > 0">
+      <FeedBox v-for="status in state.statuses" :key="status.id" :username="status.author.username"
+        :message="status.message" :avatar="status.avatar" />
+    </template>
   </div>
 </template>
 
@@ -96,6 +97,8 @@ export default {
   flex-direction: column;
   padding: 2rem;
   row-gap: 2rem;
+  background: #f8fafb;
+  height: 100vh;
 }
 
 .status-box {

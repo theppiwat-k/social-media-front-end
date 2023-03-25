@@ -1,7 +1,7 @@
 <script setup>
 import LeftSide from "./LeftSide.vue";
 import RightSide from "./RightSide.vue";
-import ContentView from "./ContentPage.vue";
+import ContentPage from "./ContentPage.vue";
 import "../../assets/global.css";
 
 
@@ -12,7 +12,7 @@ import "../../assets/global.css";
       <LeftSide />
     </div>
     <div class="content">
-      <ContentView />
+      <ContentPage />
     </div>
     <div class="right-bar">
       <RightSide />

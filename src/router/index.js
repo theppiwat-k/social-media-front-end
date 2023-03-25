@@ -40,9 +40,10 @@ const router = createRouter({
 router.beforeEach(async (to) => {
   await store.dispatch('authenticate');
   const isAuthenticated = computed(() => {
-    return store.state.isAuthenticated
-      ? store.state.isAuthenticated
-      : undefined;
+    if (store.state.isAuthenticated !== undefined) {
+      return store.state.isAuthenticated;
+    }
+    return undefined;
   });
   if (isAuthenticated.value !== undefined) {
     if (to.name !== 'Login' && !isAuthenticated.value) {

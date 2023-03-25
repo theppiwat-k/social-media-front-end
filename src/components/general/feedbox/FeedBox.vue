@@ -1,14 +1,16 @@
-<script>
-export default {
-  props: ['username', 'message'],
-};
+<script setup>
+defineProps({
+  username: { type: String, required: true },
+  message: { type: String, required: true },
+  avatar: { type: String, required: true },
+})
 </script>
 
 <template>
   <div class="feed-news rounded-custom">
     <div class="information mb-3">
       <div>
-        <img class="rounded-circle" src="../../../assets/profile.jpg" alt="" />
+        <img class="rounded-circle" :src="avatar" alt="profile image" />
         <h5> {{ username }}</h5>
       </div>
       <em class="bi bi-three-dots"></em>
