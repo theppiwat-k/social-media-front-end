@@ -1,6 +1,6 @@
 <script setup>
 import Request from "../general/requestFriend/RequestFriend.vue";
-import Contact from "../general/contact/Contact.vue";
+import ContactFriend from "../general/contactFriend/contactFriend.vue";
 import Suggest from "../general/suggestFriend/SuggestFriend.vue"
 import { ref } from "vue";
 
@@ -11,11 +11,11 @@ const updateRequestCount = ((requests) => {
   request.value = requests
 })
 
-const updateContactCount = ((contacts)=>{
+const updateContactCount = ((contacts) => {
   contact.value = contacts
 })
 
-const updateSuggestCount = ((suggests)=>{
+const updateSuggestCount = ((suggests) => {
   suggest.value = suggests
 })
 
@@ -26,20 +26,20 @@ const updateSuggestCount = ((suggests)=>{
   <div class="lay-out">
     <div class="requests">
       <h6>REQUESTS</h6>
-      <span v-if="request > 0 " class="badge bg-primary rounded-pill">{{ request }}</span>
+      <span v-if="request > 0" class="badge bg-primary rounded-pill">{{ request }}</span>
       <h5 v-else class="no-request">No Request</h5>
       <Request @request-count="updateRequestCount" />
     </div>
     <div class="contact">
       <h6>CONTACTS</h6>
-      <span v-if="contact > 0 " class="badge bg-primary rounded-pill">{{ contact }}</span>
+      <span v-if="contact > 0" class="badge bg-primary rounded-pill">{{ contact }}</span>
       <h5 v-else class="no-contact">No Contact</h5>
-      <Contact @contact-count="updateContactCount" />
+      <ContactFriend @contact-count="updateContactCount" />
     </div>
     <div class="suggest">
       <h6>SUGGEST</h6>
-      <Suggest v-if="suggest > 0" @suggest-count="updateSuggestCount"/>
-      <h5 v-else class="no-request" >No Suggest</h5>
+      <Suggest v-if="suggest > 0" @suggest-count="updateSuggestCount" />
+      <h5 v-else class="no-request">No Suggest</h5>
     </div>
   </div>
 </template>

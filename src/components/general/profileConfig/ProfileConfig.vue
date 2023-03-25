@@ -1,21 +1,24 @@
 <script setup>
-import { reactive, ref } from 'vue';
+import { reactive, ref, computed, watch } from 'vue';
 import { useStore } from 'vuex';
 import UserService from '../../../services/user.service'
+import getAvartar from '../../../utils/getAvatar';
 const URL = import.meta.env.VITE_API_URL;
 
 const store = useStore();
 const fileInput = ref(null)
-const userId = store.state.userInformation.id
-const userName = store.state.userInformation.username
 const state = reactive({
    userBody: {
-      id: userId,
-      username: userName,
-      avatar: `${URL}/avatars/${userId}.jpg`,
+      id: store.state.userInformation.id,
+      username: store.state.userInformation.username,
+      avatar: `${URL}/avatars/${store.state.userInformation.id}.jpg`,
    },
    action: 'view',
    image: ''
+})
+
+const avatar = computed(() => {
+   return getAvartar(store.state.userInformation)
 })
 
 const onFileChanged = ($event) => {
@@ -48,10 +51,26 @@ const updateUserProfile = async () => {
    })
 }
 
+const onEditMode = () => {
+   state.action = 'edit'
+}
+
 const onCancel = () => {
    state.image = null
+   state.userBody.id = store.state.userInformation.id
+   state.userBody.username = store.state.userInformation.username
+   state.userBody.avatar = getAvartar(store.state.userInformation) 
    state.action = 'view'
 }
+
+watch(() => store.state.userInformation, (userInformation) => {
+   // Update the userBody properties
+   state.userBody.id = userInformation.id;
+   state.userBody.username = userInformation.username;
+   state.userBody.avatar = getAvartar(userInformation)
+});
+
+
 
 </script>
 
@@ -64,8 +83,8 @@ const onCancel = () => {
             <span>Profile image</span>
             <p style="color: rgb(134, 142, 150);">Suggestion 200 x 200</p>
             <div class="text-left">
-               <img v-if="state.image" :src="state.image" class="rounded" width="200" height="200" alt="...">
-               <img v-else :src="state.userBody.avatar" class="rounded" width="200" height="200" alt="...">
+               <img v-if="state.image" :src="state.image" class="img-fluid rounded profile-image" alt="profile image">
+               <img v-else :src="avatar" class="img-fluid rounded profile-image" alt="profile image">
             </div>
             <div v-if="state.action === 'edit'" class="form-group">
                <label for="avatar">Image Input</label>
@@ -90,7 +109,7 @@ const onCancel = () => {
             </div>
          </div>
          <button v-if="state.action === 'view'" type="button" class="btn btn-primary me-2"
-            @click="state.action = 'edit'">Edit</button>
+            @click="onEditMode()">Edit</button>
          <button v-else type="button" class="btn btn-warning me-2" @click="updateUserProfile()">Save</button>
          <button v-if="state.action === 'view'" type="button" class="btn btn-secondary"
             @click="$router.push('main')">Back</button>
@@ -114,5 +133,10 @@ const onCancel = () => {
          }
       }
    }
+}
+
+.profile-image {
+   width: 200px !important;
+   height: 200px !important;
 }
 </style>

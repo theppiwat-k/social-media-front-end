@@ -1,33 +1,41 @@
 <script setup>
 
+import { reactive, onMounted } from 'vue';
 import FriendService from '../../../services/friend.service';
-import { reactive,onMounted } from 'vue';
+import getAvartar from '../../../utils/getAvatar';
 
 const state = reactive({
   contacts: [
   ]
 })
 
-const getFriend = async ()=>{
+const getFriend = async () => {
   await FriendService.getFriend().then((response) => {
-    const friends = response.data.data
-    state.contacts = friends
-    emit('contactCount',state.contacts.length)
+    if (response.data.data.length > 0) {
+      const friends = response.data.data.map(friend => {
+        return { ...friend, avatar: getAvartar(friend) }
+      })
+      state.contacts = friends
+      emit('contactCount', state.contacts.length)
+    } else {
+      emit('contactCount', 0)
+    }
   }).catch((error) => {
     console.error(error);
   })
 }
 
+
 const emit = defineEmits(['contactCount'])
 
-onMounted(()=>{
+onMounted(() => {
   getFriend();
 })
 </script>
 <template>
-  <div class="contacts-box">
-    <div class="contacts mb-4" v-for="contact in state.contacts" :key="contact.id">
-      <img class="rounded-circle" src="../../../assets/profile.jpg" alt="" />
+  <div v-if="state.contacts.length > 0" class="contacts-box">
+    <div v-for="contact in state.contacts" :key="contact.id" class="contacts mb-4">
+      <img class="rounded-circle" :src="contact.avatar" alt="profile image" />
       <h5 class="contact-name">{{ contact.username }}</h5>
       <em class="bi bi-three-dots"></em>
     </div>

@@ -36,6 +36,7 @@ const store = createStore({
             id: response.data.data.id,
             email: response.data.data.email,
             username: response.data.data.username,
+            avatar: response.data.data.avatar,
           };
           commit("userInformation", userInformation);
         })

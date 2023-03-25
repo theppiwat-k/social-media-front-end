@@ -1,4 +1,5 @@
 <script>
+import router from "../../router";
 import StatusService from "../../services/status.service";
 import FeedBox from "../general/feedbox/FeedBox.vue";
 
@@ -14,22 +15,26 @@ export default {
   },
   created() {
     const token = localStorage.getItem("token");
-    const parseJwt = (tokenValue) => {
-      var base64Url = tokenValue.split(".")[1];
-      var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
-      var jsonPayload = decodeURIComponent(
-        atob(base64)
-          .split("")
-          .map(function (c) {
-            return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
-          })
-          .join("")
-      );
-      return JSON.parse(jsonPayload);
-    };
-    const data = parseJwt(token);
-    this.email = data.data;
-    this.getStatutus();
+    if(token){
+      const parseJwt = (tokenValue) => {
+        var base64Url = tokenValue.split(".")[1];
+        var base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
+        var jsonPayload = decodeURIComponent(
+          atob(base64)
+            .split("")
+            .map(function (c) {
+              return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+            })
+            .join("")
+        );
+        return JSON.parse(jsonPayload);
+      };
+      const data = parseJwt(token);
+      this.email = data.data;
+      this.getStatutus();
+    }else{
+      router.push('/login')
+    }
   },
   methods: {
     postStatus() {

@@ -1,3 +1,4 @@
+import { computed } from 'vue';
 import { createWebHistory, createRouter } from 'vue-router';
 import store from '../store/userState';
 
@@ -38,9 +39,28 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   await store.dispatch('authenticate');
-  const isAuthenticated = store.state.isAuthenticated
-  if (to.name !== 'Login' && !isAuthenticated) {
-    return '/login';
+  const isAuthenticated = computed(() => {
+    return store.state.isAuthenticated
+      ? store.state.isAuthenticated
+      : undefined;
+  });
+  if (isAuthenticated.value !== undefined) {
+    if (to.name !== 'Login' && !isAuthenticated.value) {
+      // If user is not authenticated, redirect to login page and save intended URL
+      localStorage.setItem('intendedUrl', to.fullPath);
+      return '/login';
+    } else if (to.name === 'Login' && isAuthenticated.value) {
+      // If user is authenticated and tries to access login page,
+      // redirect to main page
+      return '/main';
+    } else if (isAuthenticated.value) {
+      // If user is authenticated, check for intended URL and redirect if it exists
+      const intendedUrl = localStorage.getItem('intendedUrl');
+      if (intendedUrl) {
+        localStorage.removeItem('intendedUrl');
+        return intendedUrl;
+      }
+    }
   }
 });
 

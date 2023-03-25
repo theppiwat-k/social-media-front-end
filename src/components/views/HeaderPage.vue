@@ -1,9 +1,10 @@
 <script setup>
-
 import { useStore } from 'vuex';
 import { useRouter } from 'vue-router'
-import { onMounted } from "vue";
+import { onMounted, computed } from "vue";
 import AuthenticationService from "../../services/authentication.service";
+import getAvartar from '../../utils/getAvatar';
+
 
 const store = useStore();
 const router = useRouter();
@@ -15,6 +16,10 @@ const onLogout = async () => {
     router.push("/login");
   }).catch()
 }
+
+const avatar = computed(() => {
+  return getAvartar(store.state.userInformation)
+})
 
 onMounted(async () => {
   await store.dispatch('userInformation')
@@ -40,8 +45,8 @@ onMounted(async () => {
         </ul>
         <h4 style="margin-right: 1rem;"> {{ store.state.userInformation.username }}</h4>
         <button type="button" class="btn btn-outline-secondary me-2" @click="onLogout()">Logout</button>
-        <img src="../../assets/profile.jpg" class="img-fluid rounded-circle" alt="logo-image"
-          style="margin-left: 10px;width: 30px;height: 30px;" />
+        <img :src="avatar" class="img-fluid rounded-circle" alt="logo-image" style="margin-left: 10px;" width="30"
+          height="30" />
       </div>
     </div>
   </nav>

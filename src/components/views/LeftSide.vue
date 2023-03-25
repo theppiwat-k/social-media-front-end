@@ -1,7 +1,12 @@
 <script setup>
+import { computed } from 'vue'
 import { useStore } from 'vuex';
+import getAvartar from '../../utils/getAvatar';
 
 const store = useStore();
+const avatar = computed(() => {
+  return getAvartar(store.state.userInformation)
+})
 
 </script>
 
@@ -9,7 +14,7 @@ const store = useStore();
   <div class="lay-out">
     <div class="profile-box rounded-custom shadow-sm">
       <div class="profile-img rounded-custom">
-        <img src="../../assets/logo.svg" class="img-fluid" alt="proflile-image" />
+        <img :src="avatar" class="img-fluid rounded-custom" alt="proflile-image" width="30" height="30" />
       </div>
       <div class="profile-name">
         <h5>{{ store.state.userInformation.username }}</h5>
