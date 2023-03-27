@@ -10,7 +10,7 @@ const store = useStore();
 const router = useRouter();
 
 const onLogout = async () => {
-  store.dispatch('logout');
+  store.dispatch('logout')
   await AuthenticationService.logout(store.state.userInformation).then(() => {
     localStorage.removeItem('token')
     router.push("/login");

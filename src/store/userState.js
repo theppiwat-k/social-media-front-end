@@ -1,7 +1,8 @@
-import { createStore } from "vuex";
 import AuthenticationService from "../services/authentication.service";
+import { Store } from "vuex";
+import { createStore } from 'vuex-extensions'
 
-const store = createStore({
+const store = createStore(Store,{
   state: {
     isAuthenticated: false,
     userInformation: {},
@@ -13,9 +14,6 @@ const store = createStore({
     userInformation(state, userInformation) {
       state.userInformation =  Object.freeze(userInformation);
     },
-    logout(state){
-      state.isAuthenticated = false
-    }
   },
   actions: {
     authenticate({ commit }) {
@@ -44,8 +42,8 @@ const store = createStore({
           console.error(error);
         });
     },
-    logout({commit}){
-      commit("logout", false)
+    logout(){
+      store.reset();
     }
   },
   modules: {},
