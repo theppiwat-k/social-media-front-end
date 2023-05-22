@@ -1,30 +1,34 @@
 <script setup>
 import { reactive, watch, onMounted } from "vue"
 import { useStore } from "vuex";
-import StatusService from "../../services/status.service";
+import PostService from "../../services/post.service";
 import getAvartar from "../../utils/getAvatar";
-import FeedBox from "../general/feedbox/FeedBox.vue";
+import PostBox from "../general/postBox/PostBox.vue";
+import PostBoxModel from "../../models/PostBoxModel"
+
 
 const store = useStore();
 const state = reactive({
   id: store.state.userInformation.id,
   message: "",
   stories: ["1", "2", "3", "4", "5", "6", "7"],
-  statuses: [],
+  posts: [],
   avatar: getAvartar(store.state.userInformation)
 })
 
-const getStatutus = async () => {
+const getPost = async () => {
   const body = {
     id: store.state.userInformation.id
   }
-  await StatusService.getStatutus(body)
+  await PostService.getPost(body)
     .then((response) => {
+      state.message = ''
       if (response.data.data.length > 0) {
-        const statusMap = response.data.data.map(status => {
-          return { ...status, avatar: getAvartar(status.author) }
-        })
-        state.statuses = statusMap
+        state.posts = []
+        response.data.data.forEach(postvalue => {
+          const post = new PostBoxModel(postvalue, state.id)
+          state.posts.push(post)
+        });
       }
     })
     .catch((error) => {
@@ -32,14 +36,26 @@ const getStatutus = async () => {
     });
 }
 
-const postStatus = async () => {
+const refreshComment = async (data) => {
+  const { commentofpost, id } = data
+  const postIndex = state.posts.findIndex(post => post.id === id)
+  state.posts[postIndex].comments = commentofpost
+}
+
+const refreshMessage = async (data) => {
+  const { newMessage, postId } = data
+  const postIndex = state.posts.findIndex(post => post.id === postId)
+  state.posts[postIndex].message = newMessage
+}
+
+const createPost = async () => {
   const body = {
     author: state.id,
     message: state.message,
   };
-  await StatusService.postStatus(body)
-    .then((response) => {
-      getStatutus();
+  await PostService.createPost(body)
+    .then(() => {
+      getPost();
     })
     .catch((error) => {
       console.error(error);
@@ -50,13 +66,13 @@ watch(() => store.state.userInformation, (userInformation) => {
   state.id = userInformation.id;
   state.avatar = getAvartar(store.state.userInformation)
   if (state.id) {
-    getStatutus();
+    getPost();
   }
 }, { deep: true });
 
 onMounted(() => {
   if (state.id) {
-    getStatutus();
+    getPost();
   }
 })
 
@@ -64,7 +80,7 @@ onMounted(() => {
 
 <template>
   <div class="lay-out">
-    <div class="stoty-control">
+    <div class="story-control">
       <div v-for="item in state.stories" :key="item" class="story-box rounded-custom">
         <img class="img-profile rounded-circle" src="../../assets/profile.jpg" alt="" />
         <img class="bg rounded-custom" src="../../assets/profile.jpg" alt="" />
@@ -79,14 +95,14 @@ onMounted(() => {
         <div class="text-area">
           <textarea v-model="state.message" class="text-area-status" placeholder="what's new"></textarea>
         </div>
-        <button class="btn btn-primary btn-lg" type="submit" @click="postStatus()">
+        <button class="btn btn-primary btn-lg" type="submit" @click="createPost()">
           <em class="bi bi-chat-square-dots-fill"></em>
         </button>
       </div>
     </div>
-    <template v-if="state.statuses.length > 0">
-      <FeedBox v-for="status in state.statuses" :key="status.id" :username="status.author.username"
-        :message="status.message" :avatar="status.avatar" />
+    <template v-if="state.posts.length > 0">
+      <PostBox v-for="post in state.posts" :key="post.id" :post-box="post" @getpost="getPost"
+        @refresh-comment="refreshComment" @refresh-message="refreshMessage" />
     </template>
   </div>
 </template>
@@ -98,7 +114,6 @@ onMounted(() => {
   padding: 2rem;
   row-gap: 2rem;
   background: #f8fafb;
-  height: 100vh;
 }
 
 .status-box {
@@ -137,7 +152,7 @@ onMounted(() => {
   }
 }
 
-.stoty-control {
+.story-control {
   display: flex;
   column-gap: 2rem;
   max-width: 875px;
